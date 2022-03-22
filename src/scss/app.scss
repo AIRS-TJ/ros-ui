@@ -1,0 +1,78 @@
+.layout-header {
+    flex-shrink: 0;
+    background-color: white;
+    height: 64px;
+    background: #ffffff;
+    box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.16);
+    z-index: 9;
+
+}
+.side-menu{
+    background-color: var(--main-color);
+}
+.logo{
+    height: 60px;
+    width: 100%;
+    background-color: var(--main-color);
+    border-bottom: 1px solid #753AD6;
+    display: flex;
+    align-items: center;
+}
+.logo-icon {
+    width: 69px;
+    height: 36px;
+    margin-left: 23px;
+}
+.ant-layout-sider, .ant-menu , .ant-menu-sub.ant-menu-inline {
+    background-color: var(--main-color);
+    color: #fff;
+}
+.ant-layout-sider, .ant-menu , .ant-menu-sub.ant-menu-inline  i{
+        color: #fff;
+}
+.ant-layout-sider, .ant-menu , .ant-menu-sub.ant-menu-inline  i::before{
+        color: #fff;
+}
+.ant-layout-sider, .ant-menu , .ant-menu-sub.ant-menu-inline  span::before{
+        color: #fff;
+}
+.ant-menu-submenu-selected {
+    color: white;
+}
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected{
+    background-color: var(--main-color-active);
+    color: white;
+}
+.ant-menu-vertical .ant-menu-item::after, .ant-menu-vertical-left .ant-menu-item::after, .ant-menu-vertical-right .ant-menu-item::after, .ant-menu-inline .ant-menu-item::after{
+    border: 0;
+}
+
+.ant-menu-light .ant-menu-item:hover, .ant-menu-light .ant-menu-item-active, .ant-menu-light .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open, .ant-menu-light .ant-menu-submenu-active, .ant-menu-light .ant-menu-submenu-title:hover{
+    color: #e3e3e3;
+}
+.ant-menu-submenu:hover > .ant-menu-submenu-title > .ant-menu-submenu-expand-icon, .ant-menu-submenu:hover > .ant-menu-submenu-title > .ant-menu-submenu-arrow{
+    color: #e3e3e3;
+}
+.ant-menu-item:active, .ant-menu-submenu-title:active{
+    background-color: #422475;
+}
+.ant-menu-submenu-expand-icon, .ant-menu-submenu-arrow {
+    color: white;
+}
+.ant-switch-checked
+{
+    background-color: var(--main-color);
+}
+.ant-input-number-focused,
+
+.ant-input-number:hover, .ant-input:hover, .ant-input:focus {
+    border-color: var(--main-color);
+    box-shadow: none;
+}
+.ant-menu{
+    font-size: 16px;
+}
+
+.ant-menu-root {
+    overflow: hidden;
+}

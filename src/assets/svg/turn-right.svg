@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18.99 17.17">
+    <title>右转</title>
+    <g id="图层_2" data-name="图层 2">
+        <g id="图层_1-2" data-name="图层 1">
+            <path
+                stroke="#503183"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5px"
+                fill="none"
+                d="M16.54,11a8,8,0,0,1-7.72,5.39A7.86,7.86,0,0,1,.75,8.78,7.86,7.86,0,0,1,8.82,1.14a8.29,8.29,0,0,1,5.49,2" />
+            <polygon stroke="#503183" stroke-linecap="round" stroke-linejoin="round"
+                points="18.49 6.17 12.07 5.35 16.04 0.5 18.49 6.17" />
+        </g>
+    </g>
+</svg>

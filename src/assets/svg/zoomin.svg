@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23.5 24.5">
+    <g id="图层_2" data-name="图层 2">
+        <g id="图层_1-2" data-name="图层 1">
+            <line class="cls-1" fill="none" stroke="#fff" stroke-width="1.5px" stroke-linecap="round"
+                stroke-linejoin="round" x1="11.25" y1="6.25" x2="11.25" y2="16.25" />
+            <line class="cls-1" fill="none" stroke="#fff" stroke-width="1.5px" stroke-linecap="round"
+                stroke-linejoin="round" x1="6.25" y1="11.25" x2="16.25" y2="11.25" />
+            <circle class="cls-2" fill="none" stroke="#fff" stroke-width="1.5px" fill="none" stroke="#fff"
+                stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="11.25"
+                cy="11.25" r="10.5" />
+            <line class="cls-1" fill="none" stroke="#fff" stroke-width="1.5px" fill="none" stroke="#fff"
+                stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5px" x1="22.75" y1="23.75" x2="18.25"
+                y2="19.25" />
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 13.5 12.5">
+    <g id="图层_2" data-name="图层 2">
+        <g id="图层_1-2" data-name="图层 1">
+            <rect fill="none" stroke="#333" stroke-linecap="round" stroke-linejoin="round" x="0.5" y="0.5" width="5"
+                height="5" />
+            <rect fill="none" stroke="#333" stroke-linecap="round" stroke-linejoin="round" x="0.5" y="7" width="5"
+                height="5" />
+            <rect fill="none" stroke="#333" stroke-linecap="round" stroke-linejoin="round" x="7.5" y="0.5" width="5"
+                height="5" />
+            <polyline fill="none" stroke="#333" stroke-linecap="round" stroke-linejoin="round"
+                points="12.5 9.65 12.5 12 10.27 12" />
+            <rect fill="#333" x="2" y="2" width="2" height="2" rx="0.2" />
+            <polyline fill="none" stroke="#333" stroke-linecap="round" stroke-linejoin="round"
+                points="8 12 8 10 10 10 10 8 13 8" />
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16.01 9">
+    <defs>
+        <style>
+            .cls-1 {
+                fill: #503183;
+            }
+        </style>
+    </defs>
+    <title>前进</title>
+    <g id="图层_2" data-name="图层 2">
+        <g id="图层_1-2" data-name="图层 1">
+            <path fill="#503183"
+                d="M7.22.32.34,7.07A1.13,1.13,0,0,0,1.13,9H14.88a1.13,1.13,0,0,0,.79-1.93L8.79.32A1.12,1.12,0,0,0,7.22.32Z" />
+        </g>
+    </g>
+</svg>

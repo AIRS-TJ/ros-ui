@@ -1,0 +1,32 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+ul, ol {
+    list-style: none;
+    margin: 0;
+}
+p {
+    margin: 0;
+}
+#nprogress .bar {
+    background: #189c25;
+}
+
+#app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
+    margin-top: 0;
+}
+
+.dashboard {
+    background-color: #ffffff;
+    padding: 24px;
+    margin: 24px;
+    width: calc(100% - 48px);
+    height: calc(100% - 48px);
+
+}

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12.47 11.96">
+    <defs>
+        <style>
+            .cls-1 {
+                fill: #333;
+            }
+
+            .cls-2 {
+                fill: none;
+                stroke: #333;
+                stroke-miterlimit: 10;
+            }
+        </style>
+    </defs>
+    <title>撤销</title>
+    <g id="图层_2" data-name="图层 2">
+        <g id="图层_1-2" data-name="图层 1">
+            <path class="cls-1"
+                 fill="#333"
+                d="M.22,3.8,4.07,6.64a.53.53,0,0,0,.85-.43V.54A.53.53,0,0,0,4.07.11L.22,2.94A.53.53,0,0,0,.22,3.8Z" />
+            <path fill="none"
+                stroke="#333"
+                stroke-miterlimit="10" d="M4.33,3.74C8.55,3.74,12,7.42,12,12" />
+        </g>
+    </g>
+</svg>
