@@ -4,15 +4,17 @@ import { Menu } from 'ant-design-vue'
 import { useRouter } from "vue-router";
 import HomeHeader from '@/components/home/HomeHeader.vue'
 import SvgIcon from '@/components/svg/SvgIcon.vue'
+import { useAppStore } from "@/store/app";
 
 
 export default defineComponent({
   components: { HomeHeader },
   setup(){
     const router = useRouter()
+    const appStore = useAppStore()
+
     const onMenuClick = (e:any) => {
-      console.log('/dashboard/' + e.key)
-      router.push('/dashboard/' + e.key)
+        router.push('/dashboard/' + e.key)
     }
     return ()=> (
       <a-layout id="layout">

@@ -42,12 +42,13 @@
                 <div class="info"></div>
             </div>
         </div>
-        <div class="robot-"></div>
+        <div class="robot-map-list"></div>
     </div>
 </template>
 <script lang="ts">
 import { computed, defineComponent, onMounted, onUnmounted, reactive, toRefs } from 'vue'
 import RosManager from '@/util/RosManager'
+import { createTopic } from '@/util/RosUtil';
 
 export default defineComponent({
     setup() {
@@ -81,6 +82,7 @@ export default defineComponent({
         }) {
             state.battery = data;
         });
+
         onUnmounted(() => {
             listener.unsubscribe();
         });

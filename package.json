@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build && yarn deploy",
+    "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview",
     "deploy": "scp -r ros root@121.5.20.20:/www"
   },
   "dependencies": {
-    "ant-design-vue": "2",
+    "ant-design-vue": "^2.2.8",
     "axios": "^0.24.0",
     "lodash-es": "^4.17.21",
     "pinia": "^2.0.2",

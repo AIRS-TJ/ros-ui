@@ -1,78 +1,48 @@
 <template>
     <div class="header-con">
         <div class="left-layout">
-            <a-button
-                @click="showLoadPap = true"
-                type="primary"
-                size="small"
-                class="ros-btn-primary"
-                style="margin-left: 10px"
-            >
+            <a-button @click="onMapListVisibleChange(true)" type="primary" size="small" class="ros-btn-primary"
+                style="margin-left: 10px">
                 <template #icon>
                     <DownloadOutlined />
                 </template>
                 加载地图
             </a-button>
 
-            <a-button @click="onCreateMap" size="small" class="ros-btn-primary" type="primary" style="margin-left: 20px">
+            <a-button @click="onCreateMap" size="small" class="ros-btn-primary" type="primary"
+                style="margin-left: 20px">
                 <template #icon>
                     <PlusOutlined />
                 </template>
                 新建地图
             </a-button>
 
-            <div class="create-map-action" v-if="isCreateMap">
-                <a-button
-                    @click="onSaveMap"
-                    type="primary"
-                    size="small"
-                    class="ros-btn-primary"
-                    style="margin-left: 10px"
-                >保存</a-button>
+            <div class="create-map-action" v-if="isCreatingNewMap">
+                <a-button @click="onSaveMap" type="primary" size="small" class="ros-btn-primary"
+                    style="margin-left: 10px">保存</a-button>
 
-                <a-button
-                    @click="onQuitMap"
-                    type="primary"
-                    size="small"
-                    class="ros-btn-primary"
-                    style="margin-left: 20px"
-                >退出</a-button>
-                <span class="map-name">{{ newMapName }}</span>
+                <a-button @click="onQuitMap" type="primary" size="small" class="ros-btn-primary"
+                    style="margin-left: 20px">退出</a-button>
+                <span class="map-name">{{ mapNameFormState.newMapName }}</span>
             </div>
         </div>
         <div class="right-layout">
-            <a-button class="emergency-stop" type="danger" size="small" @click="emergencyStop">急停</a-button>
+            <a-button class="emergency-stop" size="small" @click="emergencyStop">急停</a-button>
             <div class="info-icon"></div>
             <span style="margin-left: 24px;margin-right: 8px; font-size: 16px;">admin</span>
-            <DownOutlined style="font-size: 12px;"/>
+            <DownOutlined style="font-size: 12px;" />
         </div>
     </div>
 
-    <a-modal v-model:visible="showLoadPap" title="加载地图" width="1000px" :footer="null">
-        <a-input-search
-            v-model:value="mapFileSearchKeywords"
-            placeholder="地图名称"
-            style="width: 200px; margin-bottom: 20px;"
-            @search="onSearchMapFile"
-        />
-        <a-table
-            :dataSource="mapDataSource"
-            :columns="mapDataColumns"
-            v-if="mapFileViewType === 'list'"
-        >
+    <a-modal :visible="showLoadPap" @cancel="onMapListVisibleChange(false)" title="加载地图" width="1000px" :footer="null">
+        <a-input-search v-model:value="mapFileSearchKeywords" placeholder="地图名称"
+            style="width: 200px; margin-bottom: 20px;" @search="onSearchMapFile" />
+        <a-table :dataSource="mapDataSource" :columns="mapDataColumns" v-if="mapFileViewType === 'list'">
             <template #customTitle>
-                <img
-                    class="list-icon__card"
-                    src="../../assets/list-card.png"
-                    style="cursor: pointer"
-                    @click="toggleMopFileView('card')"
-                />
-                <img
-                    class="list-icon"
-                    src="../../assets/list-active.png"
-                    style="margin-left: 5px; cursor: pointer"
-                    @click="toggleMopFileView('list')"
-                />
+                <img class="list-icon__card" src="../../assets/list-card.png" style="cursor: pointer"
+                    @click="toggleMopFileView('card')" />
+                <img class="list-icon" src="../../assets/list-active.png" style="margin-left: 5px; cursor: pointer"
+                    @click="toggleMopFileView('list')" />
             </template>
             <template #name="{ record }">
                 <span>
@@ -93,43 +63,53 @@
         </div>
     </a-modal>
 
-    <a-modal
-        v-model:visible="showMapNameDialog"
-        title="保存地图"
-        @ok="doSaveMap"
-        okText="确认"
-        cancelText="取消"
-    >
+    <a-modal v-model:visible="showMapNameDialog" title="保存地图" @ok="doSaveMap" okText="确认" cancelText="取消">
         <div class="map-name-input">
-            <a-input v-model="newMapName" :maxlength="20" />
-            <span class="map-name-count">{{ newMapName.length }} / 20</span>
+            <a-form
+                :model="mapNameFormState"
+                :rules="rules"
+            >
+                <a-form-item has-feedback label="地图名称">
+                    <a-input v-model:value="mapNameFormState.newMapName" name="newMapName" :maxlength="20" />
+                </a-form-item>
+            </a-form>
+            <span class="map-name-count">{{ mapNameFormState.newMapName.length }} / 20</span>
         </div>
-    </a-modal>
+        </a-modal>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue'
-import { DownloadOutlined, PlusOutlined, DownOutlined } from '@ant-design/icons-vue';
+import { defineComponent, onMounted, reactive, toRefs, computed, watch, h } from 'vue'
+import { DownloadOutlined, PlusOutlined, DownOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import RosManager from '@/util/RosManager'
+import { createTopic } from '@/util/RosUtil';
+import { useAppStore } from '@/store/app'
+import { notification } from 'ant-design-vue';
+
+interface State {
+    mapDataSource: { key: string, name: string, createTime: string, updateTime: string }[]
+    mapDataColumns: any
+    mapFileSearchKeywords: string
+    mapFileViewType: 'list' | 'card'
+    mapNameFormState:any,
+    showMapNameDialog: boolean
+    rules: any
+
+}
+
+const validateName =  async (_rule, value: string) => {
+    console.log('_rule', _rule, 'value', value)
+    const chinessReg = /^[\u4e00-\u9fa5]/
+      if (chinessReg.test(value)) {
+        return Promise.reject('地图名称不能使用中文');
+      }
+    return Promise.resolve();
+    };
 
 export default defineComponent({
     components: { DownloadOutlined, PlusOutlined, DownOutlined },
     setup() {
-        const state = reactive({
-            showLoadPap: false,
-            mapDataSource: [
-                {
-                    key: '1',
-                    name: '地图名称2',
-                    createTime: '2022-02-27 12:00',
-                    updateTime: '2022-02-27 12:00',
-                },
-                {
-                    key: '2',
-                    name: '地图名称1',
-                    createTime: '2022-02-28 12:00',
-                    updateTime: '2022-02-28 12:00',
-                },
-            ],
+        const state = reactive<State>({
+            mapDataSource: [],
             mapDataColumns: [{
                 title: '地图名称',
                 dataIndex: 'name',
@@ -163,10 +143,46 @@ export default defineComponent({
             },],
             mapFileSearchKeywords: '',
             mapFileViewType: 'list',
-            newMapName: '',
-            isCreateMap: false,
-            showMapNameDialog: false
+            showMapNameDialog: false,
+            mapNameFormState: {
+                newMapName: ''
+            },
+            rules: {
+                newMapName: [{ required: true, validator: validateName, trigger: 'input' }],
+            }
         })
+
+        const appStore = useAppStore()
+        const showLoadPap = computed(() => appStore.$state.showLoadPap)
+        const isCreatingNewMap = computed(() => appStore.$state.isCreatingNewMap)
+        //  地图列表
+        const showMapList = () => {
+            createTopic('map_list').subscribe(({ data }: { data: string }) => {
+                const mapNames = data.split('#')[1] || ''
+                const mapNameLIst = mapNames.split(' ').map((name, idx) => {
+                    return {
+                        key: `${idx}`,
+                        name,
+                        createTime: '',
+                        updateTime: ''
+                    }
+                })
+                state.mapDataSource = mapNameLIst;
+            })
+        }
+
+        watch(
+            showLoadPap,
+            (val) => {
+                if (val) { showMapList() }
+            }
+        )
+        const onMapListVisibleChange = (val: boolean) => {
+            appStore.$patch({
+                showLoadPap: val,
+            })
+        }
+
 
         const onSearchMapFile = () => { }
 
@@ -175,19 +191,46 @@ export default defineComponent({
         }
 
         const onCreateMap = () => {
-            state.isCreateMap = true
+            notification.open({
+                message: '请遥控机器人进行建图',
+                icon: h(ExclamationCircleOutlined, { style: 'color: #f5222d' })
+            });
+    //         notification.open({
+    //     message: 'Notification Title',
+    //     description:
+    //       'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
+    //     icon: h(ExclamationCircleOutlined, { style: 'color: #108ee9' }),
+    //   });
+            appStore.$patch({
+                isCreatingNewMap: true
+            })
+            createTopic("new_map").subscribe((data: any) => {
+                console.log('onCreateMap', data)
+            })
         }
 
         const onSaveMap = () => {
             state.showMapNameDialog = true
-            state.newMapName = '地图名称'
+            state.mapNameFormState.newMapName = ''
         }
         const doSaveMap = () => {
+            createTopic(`save_map#${state.mapNameFormState.newMapName}`).subscribe((data: any) => {
+                console.log('onSaveMap', data)
+            })
             state.showMapNameDialog = false
+            appStore.$patch({
+                isCreatingNewMap: false
+            })
         }
+
         const onQuitMap = () => {
-            state.newMapName = '地图名称'
-            state.isCreateMap = false
+            state.mapNameFormState.newMapName = ''
+            appStore.$patch({
+                isCreatingNewMap: false
+            })
+            createTopic('new_map_quit').subscribe((data: any) => {
+                console.log('new_map_quit data is: ', data)
+            })
         }
 
         const emergencyStop = () => {
@@ -196,9 +239,12 @@ export default defineComponent({
 
         return {
             ...toRefs(state),
+            showLoadPap,
+            isCreatingNewMap,
             onSearchMapFile,
             toggleMopFileView,
             onCreateMap,
+            onMapListVisibleChange,
             onSaveMap,
             onQuitMap,
             doSaveMap,
@@ -210,13 +256,14 @@ export default defineComponent({
 
 </script>
 
-<style lang="scss">
-.header-con {
+<style lang="scss">.header-con {
     display: flex;
     height: 100%;
+
     .list-icon {
         margin-left: 20px;
     }
+
     .create-map-action {
         position: absolute;
         background-color: #fff;
@@ -226,11 +273,13 @@ export default defineComponent({
         bottom: 0;
         display: flex;
         align-items: center;
+
         .map-name {
             margin-left: 10px;
             color: #333;
         }
     }
+
     .left-layout {
         flex-grow: 1;
         display: flex;
@@ -239,6 +288,7 @@ export default defineComponent({
         height: 100%;
         padding-left: 10px;
     }
+
     .right-layout {
         width: 300px;
         padding: 0 24px;
@@ -246,22 +296,24 @@ export default defineComponent({
         display: flex;
         align-items: center;
 
-        .emergency-stop{
+        .emergency-stop {
             background-color: #FC4646;
             width: 86px;
             height: 36px;
             font-size: 16px;
             border-radius: 4px;
         }
+
         .info-icon {
             width: 28px;
             height: 24px;
             margin-left: 50px;
-            background: url('../../assets/main-header-info.png') center  no-repeat;
+            background: url('../../assets/main-header-info.png') center no-repeat;
             background-size: contain;
         }
     }
 }
+
 .card-view {
     width: 100%;
     padding: 20px;
@@ -287,10 +339,12 @@ export default defineComponent({
             border-radius: 4px;
             background-color: #fff;
             overflow: hidden;
+
             .map-img {
                 height: 130px;
                 display: block;
             }
+
             p {
                 padding: 0 12px;
                 color: #333;
@@ -299,6 +353,7 @@ export default defineComponent({
         }
     }
 }
+
 .map-name-input {
     position: relative;
 
@@ -308,5 +363,4 @@ export default defineComponent({
         top: 6px;
         color: #999999;
     }
-}
-</style>
+}</style>

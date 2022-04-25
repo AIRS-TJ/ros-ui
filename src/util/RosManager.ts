@@ -3,6 +3,7 @@
  * 1. 地图尺寸
  */
 import { rosQuaternionToGlobalTheta } from './index'
+import Station from './Station'
 declare global {
     interface Window {
         ROSLIB: any
@@ -10,6 +11,7 @@ declare global {
         ros: any
         createjs: any
         NAV2D: any
+        __station: any
     }
 }
 import { useSystemStore } from "@/store/system"
@@ -18,6 +20,7 @@ import { notification } from "ant-design-vue"
 import { randomRGB } from './index'
 import { throttle } from "lodash-es"
 import RosNavDirection from './RosNavDirection'
+import { useRobotArrow } from './RosUtil'
 
 export let ros: any = null
 
@@ -34,6 +37,9 @@ class RosManager {
     public nav!: any
     public robot!: any
     public robotAdd: boolean
+    public isMoving!: boolean
+    pose: any
+    robotMarker!: any
     constructor() {
         this.ros = new window.ROSLIB.Ros({
             // set this to false to use the new service interface to
@@ -69,14 +75,24 @@ class RosManager {
         })
         this.ros.on('connection', () => {
             this.connected = true
+            this.displayRobot(true)
         });
         window.ros = this
         this.robotAdd = false
         this.robot = this.createRobot()
         ros = this.ros
+        this.init()
+    }
+    init(){
+        new Station(this.ros)
+        this.isMoving = false
     }
     connect(url: string) {
         this.ros.connect(url);
+    }
+    goRotate(angle: number){
+        this.twist.angular.z += angle;
+        this.cmdVel.publish(this.twist);//发布twist消息
     }
     go(direction: 'forward' | 'back' | 'left' | 'right') {
         const systemStore = useSystemStore()
@@ -112,7 +128,6 @@ class RosManager {
             width,
             height,
         });
-        console.log(this.viewer)
         this.nav = window.NAV2D.OccupancyGridClientNav({
             ros: this.ros,
             rootObject: this.viewer.scene,
@@ -121,9 +136,6 @@ class RosManager {
             continuous: true,
             withOrientation: true
         });
-        // const dir = new RosNavDirection(this.viewer.scene)
-        // console.log('dir', dir)
-
     }
     resizeMap() {
         try {
@@ -141,28 +153,80 @@ class RosManager {
         shape.alpha = 0.6
         return shape
     }
-    displayRobot() {
-        var robotMarker = new window.ROS2D.NavigationArrow({
-            size: 0.25,
-            strokeSize: 0.05,
+    displayRobot(fromConnect = false) {
+        let oldPosX = 0
+        let oldPosY = 0
+        const stage = this.viewer.scene
+        if(this.robotMarker) stage.removeChild(this.robotMarker)
+        const robotMarker = new window.ROS2D.NavigationArrow({
+            size: fromConnect? 25 : 0.25,
+            strokeSize: fromConnect ? 5 : 0.05,
             pulse: true,
             fillColor: "#F6AB00",
             strokeColor: "#F6AB00"
         });
-        console.log('robotMarker', robotMarker)
-        this.viewer.scene.addChild(robotMarker)
+        stage.addChild(robotMarker)
+        this.robotMarker = robotMarker
+        if(fromConnect) {
+            robotMarker.x = this.viewer.width / 2 - 12.5
+            robotMarker.y = -(this.viewer.height / 2 - 12.5)
+        }
+        
+        console.log(robotMarker);
 
+        (window as any).robotMarker = robotMarker
         var poseListener = new window.ROSLIB.Topic({
             ros: this.ros,
             name: '/tracked_pose',
             throttle_rate: 100
         });
-        poseListener.subscribe(function (pose: any) {
-            // console.log(`Received message on ${message} : ${message}`, message);
-            robotMarker.x = pose.pose.position.x;
-            robotMarker.y = -pose.pose.position.y;
-            robotMarker.rotation = rosQuaternionToGlobalTheta(pose.pose.orientation)
+        poseListener.subscribe((pose: any) => {
+            this.pose = pose
+            const x = pose.pose.position.x;
+            const y =  -pose.pose.position.y;
+            if(oldPosX === x && oldPosY === y) {
+                this.isMoving = false
+            } else {
+                this.isMoving = true
+                oldPosX = x
+                oldPosY = y
+                
+                robotMarker.x = pose.pose.position.x;
+                robotMarker.y = -pose.pose.position.y;
+                robotMarker.rotation = rosQuaternionToGlobalTheta(pose.pose.orientation)
+            }
         })
+
+        useRobotArrow(this.viewer.scene, robotMarker, (rotation: number) => {
+                console.log('rotation', rotation)
+                this.sendRotation(rotation)
+               
+            },
+            {
+                fromConnect: true
+            }
+        )
+       
+    }
+    sendRotation(z){
+        const msg = new window.ROSLIB.Message({
+            linear: {
+                x: 0,
+                y: 0,
+                z: 0
+            },
+            angular: {
+                x: 0,
+                y: 0,
+                z: z
+            }
+        });//创建一个message
+        const topic = new window.ROSLIB.Topic({
+            ros: this.ros,
+            name: '/cmd_vel',
+            messageType: 'geometry_msgs/Twist'
+        });
+        topic.publish(msg);//发布twist消息
     }
 }
 

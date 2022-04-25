@@ -19,7 +19,7 @@ export default defineConfig({
   },
   css: {
     preprocessorOptions: {
-      scss: { additionalData: `@import "${resolve(__dirname, './src')}/scss/variable";` },
+      scss: { additionalData: `@import "./src/scss/variable.scss";` },
     },
   },
   base: './', // 设置打包路径

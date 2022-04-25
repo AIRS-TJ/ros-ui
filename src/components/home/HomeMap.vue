@@ -79,7 +79,7 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref, toRefs, computed, onMounted, nextTick } from 'vue'
+import { defineComponent, reactive, ref, toRefs, computed, onMounted, nextTick, watch } from 'vue'
 import { StopOutlined, ArrowUpOutlined, ArrowDownOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons-vue'
 import rosManager from '@/util/RosManager'
 import useStation from '@/hooks/station'
@@ -88,6 +88,7 @@ import HomeMapActions from './HomeMapActions.vue'
 import MapAxis from './MapAxis.vue'
 import HomeMapBar from './HomeMapBar.vue'
 import { useMapSize } from '@/hooks/map'
+import { useAppStore } from '@/store/app'
 
 const actions = [
     // { icon: 'select', name: '选择' },
@@ -105,9 +106,19 @@ export default defineComponent({
         const systemStore = useSystemStore()
         const systemState = computed(() => systemStore.$state)
 
+        const appStore = useAppStore()
+        const isCreatingNewMap = computed(() => appStore.$state.isCreatingNewMap )
+
+        watch(
+            isCreatingNewMap,
+            (val:boolean)=>{
+                state.isManualControl = val
+            }
+        )
+
         const state = reactive({
             actions,
-            isManualControl: true,
+            isManualControl: false,
             activeAction: '',
             zoomScale: 1,
             rotate: 0,

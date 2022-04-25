@@ -1,4 +1,4 @@
-import { defineComponent } from "vue-demi";
+import { defineComponent } from "vue"; // vue-demi
 
 export default defineComponent({
   setup(){

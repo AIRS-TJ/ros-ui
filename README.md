@@ -20,3 +20,12 @@ rosrun map_server map_server map.yaml
 
 roslaunch rosbridge_server rosbridge_websocket.launch
 ```
+
+发送坐标数据
+```json
+ {
+     "stationId": 1,
+     "position":{"x":1.5026010609365723,"y":1.7231939796151974,"z":0},
+     "orientation":{"x":0,"y":0,"z":0.7554539516382925,"w":0.6552017452312595}
+}
+```
